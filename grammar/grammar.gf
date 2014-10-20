@@ -7,6 +7,7 @@
 <Statement> -> <Goto>
 <Statement> -> <IfHead>
 <Statement> -> <SenseLight>
+<Statement> -> CONTINUE
 <Formula> -> <Var> = <Expression>
 <Do> -> DO <StmtNo> <FPV> = <DoStart> , <DoEnd> <DoIncrement>
 <DoStart> -> <FPV>
@@ -48,7 +49,8 @@
 <FPTerm> -> ( <FPExpr> )
 <FPTerm> -> <FPTermAtom>
 <FPTermAtom> -> <FPV>
-<FPTermAtom> -> FXINUM
+<FPTermAtom> -> FIXNUM
+<FPTermAtom> -> FPFUNC ( <FPExpr> )
 <FLPExpr> -> FLOAT
 <EOL> -> #
 <StmtNo> -> NUM
