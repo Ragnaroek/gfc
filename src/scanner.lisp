@@ -1,13 +1,15 @@
 
 ; public api
 
-
 (defun new-scanner (str) 
   (cons str 0))
 
 (defun next-token (scanner)
-  (unread-whitespace! scanner) 
-  (read-token! scanner))
+  (if (>= (next scanner) (length (input scanner)))
+    :eof
+    (progn
+       (unread-whitespace! scanner) 
+       (read-token! scanner))))
 
 ; private api
 
@@ -22,7 +24,9 @@
    (next-char-n scanner 0))
 
 (defun next-char-n (scanner n)
-   (char (input scanner) (+ n (next scanner))))
+   (if (> n (length (input scanner)))
+     nil
+     (char (input scanner) (+ n (next scanner)))))
 
 (defun input (scanner)
    (car scanner))
@@ -38,9 +42,10 @@
     token))
 
 (defun len-non-whitespace (scanner len)
-   (if (whitespacep (next-char-n scanner len))
-      len
-      (len-non-whitespace scanner (1+ len))))
+   (let ((c (next-char-n scanner len))) 
+      (if (or (not c) (whitespacep c))
+         len
+         (len-non-whitespace scanner (1+ len)))))
 
 (defun unread-whitespace! (scanner)
    (if (whitespacep (next-char scanner))

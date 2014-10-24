@@ -10,7 +10,7 @@
 
 (defun main ()
   (println "main:")
-  (let ((scanner (new-scanner "IFXXYYY SENSE LIGHT X")))
+  (let ((scanner (new-scanner "X")));"IFXXYYY SENSE LIGHT X")))
       (println (next-token scanner))
       (println (next-token scanner))
       (println (next-token scanner))
