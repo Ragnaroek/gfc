@@ -50,29 +50,15 @@
 <FPTerm> -> <FPTermAtom>
 <FPTermAtom> -> <FPV>
 <FPTermAtom> -> FIXNUM
-<FPTermAtom> -> FPFUNC ( <FPExpr> )
+<FPTermAtom> -> FUNCTION_NAME ( <FPExpr> )
 <FLPExpr> -> FLOAT
 <EOL> -> #
-<StmtNo> -> NUM
-<FPV> -> I
-<FPV> -> J
-<FPV> -> K
-<FPV> -> L
-<FLPV> -> A
-<FLPV> -> B
-<FLPV> -> C
-<FLPV> -> D
+<StmtNo> -> FIXNUM
+<FPV> -> FIXED_POINT_VARIABLE
+<FLPV> -> FLOATING_POINT_VARIABLE
 <Var> -> <FPV>
 <Var> -> <FLPV>
 <VDESG> -> <FPV>
-<VDESG> -> NUM
-<LIGHT> -> 1
-<LIGHT> -> 2
-<LIGHT> -> 3
-<LIGHT> -> 4
-<SWITCH> -> 1
-<SWITCH> -> 2
-<SWITCH> -> 3
-<SWITCH> -> 4
-<SWITCH> -> 5
-<SWITCH> -> 6
+<VDESG> -> FIXNUM
+<LIGHT> -> FIXNUM
+<SWITCH> -> FIXNUM
