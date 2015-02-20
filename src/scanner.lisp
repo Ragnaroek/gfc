@@ -64,7 +64,8 @@
       (error (concatenate "illegal token: " str))))
 
 (defun fortran-keyword (str)
-   (gethash str *KEYWORDS*))
+  (let ((k (gethash str *KEYWORDS*)))
+    (when k (cons :keyword k))))
 
 (defun fortran-function-name (str)
    (when (str-ends-with str "F")

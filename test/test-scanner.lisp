@@ -10,10 +10,10 @@
        (assert-that (next-token scanner) (is :EOF))))
 
 (deftest should-return-continue-keyword
-   (assert-that (next-token (new-scanner "CONTINUE")) (is :continue)))
+   (assert-that (next-token (new-scanner "CONTINUE")) (is (cons :keyword :continue))))
 
 (deftest should-return-power-keyword
-   (assert-that (next-token (new-scanner "**")) (is :**)))
+   (assert-that (next-token (new-scanner "**")) (is (cons :keyword :**))))
 
 (deftest should-return-function-name 
    (assert-that (next-token (new-scanner "SINF")) (is (cons :function-name "SINF"))))
@@ -36,5 +36,13 @@
 (deftest should-return-float-variable
    (assert-that (next-token (new-scanner "VAR")) (is (cons :float-var "VAR"))))
 
+(deftest should-scan-list
+   (let ((scanner (new-scanner "LIGHT 7\tMAXF \n764     N764 FLOATV  ")))
+     (assert-that (next-token scanner) (is (cons :keyword :light)))	   
+     (assert-that (next-token scanner) (is (cons :fixnum 7)))
+     (assert-that (next-token scanner) (is (cons :function-name "MAXF")))
+     (assert-that (next-token scanner) (is (cons :fixnum 764)))
+     (assert-that (next-token scanner) (is (cons :fixnum-var "N764")))
+     (assert-that (next-token scanner) (is (cons :float-var "FLOATV")))))
+
 ;TODO ERROR Cases : I123456 --> too long
-;TODO check stream of tokens
