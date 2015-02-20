@@ -21,13 +21,6 @@
 (sethash "**" *KEYWORDS* :**)
 (sethash "#" *KEYWORDS* :hash)
 
-
-;TODO FIXNUM gesondert abbilden
-;TODO FLOAT
-;TODO FLOATING_POINT_VARIABLE
-;TODO FIXED_POINT_VARIABLE
-;TODO FUNCTION_NAME
-
 (defun new-scanner (str) 
   (cons str 0))
 
@@ -64,7 +57,11 @@
 (defun make-token (str)
   (or (fortran-keyword str) 
       (fortran-function-name str) 
-      (fortran-fixnum str)))
+      (fortran-fixnum str)
+      (fortran-float str)
+      (fortran-fixnum-variable str)
+      (fortran-float-variable str)
+      (error (concatenate "illegal token: " str))))
 
 (defun fortran-keyword (str)
    (gethash str *KEYWORDS*))
@@ -73,8 +70,25 @@
    (when (str-ends-with str "F")
      (cons :function-name str)))
 
+;TODO Regex nicht immer neu erzeugen, sondern cachen!
 (defun fortran-fixnum (str)
-   NIL)
+  (when (regex-test (regex "^[1-9]([0-9])*$") str)
+    (cons :fixnum (parse-integer str)))) 
+
+(defun fortran-float (str)
+  (when (regex-test (regex "^(([1-9][0-9]*\\.?[0-9]*)|(\\.[0-9]+))([Ee][+-]?[0-9]+)?$") str)
+    (cons :float (parse-float str))))
+
+(defun fortran-fixnum-variable (str)
+  (when (and (< (length str) 7) (has-fixnum-prefix str))
+    (cons :fixnum-var str)))
+
+(defun fortran-float-variable (str)
+  (when (and (< (length str) 7) (not (has-fixnum-prefix str)))
+    (cons :float-var str)))
+
+(defun has-fixnum-prefix (str)
+   (find (str-first str) '("I" "J" "K" "L" "M" "N")))
 
 (defun read-token! (scanner)
   (let (l token)

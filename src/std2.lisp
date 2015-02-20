@@ -15,6 +15,9 @@ TODO Funktionen, die in die StdLib von Acheron gehören und dort auch bald integ
    return str.substring(start, end);
 }#)
 
+(defun str-first (str)
+  (subseq str 0 1))
+
 (defun >= (a b) 
   (or (> a b) (eql a b)))
 
@@ -44,3 +47,22 @@ TODO Funktionen, die in die StdLib von Acheron gehören und dort auch bald integ
    }
 }#)
 
+(defnative regex (str) #{
+   return new RegExp(str);
+}#)
+
+(defnative regex-test (regex str) #{
+   return regex.test(str)?acheron.t:acheron.nil;
+}#)
+
+(defnative parse-integer (str) #{
+   return parseInt(str, 10);
+}#)
+
+(defnative parse-float (str) #{
+   return parseFloat(str);
+}#)
+
+(defun find (e l)
+  (when l 
+    (if (equal e (car l)) e (find e (cdr l)))))
