@@ -1,7 +1,7 @@
-<Program> -> <StmtList>
+<Program> -> <StmtList> #
 <StmtList> -> <StatementLine> <StmtList>
 <StmtList> -> ɛ
-<StatementLine> -> <StmtNo> <Statement> <EOL>
+<StatementLine> -> <StmtNo> <Statement> EOL
 <Statement> -> <Formula>
 <Statement> -> <Do>
 <Statement> -> <Goto>
@@ -52,7 +52,6 @@
 <FPTermAtom> -> FIXNUM
 <FPTermAtom> -> FUNCTION_NAME ( <FPExpr> )
 <FLPExpr> -> FLOAT
-<EOL> -> #
 <StmtNo> -> FIXNUM
 <FPV> -> FIXED_POINT_VARIABLE
 <FLPV> -> FLOATING_POINT_VARIABLE

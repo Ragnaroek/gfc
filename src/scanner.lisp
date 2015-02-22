@@ -1,6 +1,4 @@
 
-; public api
-
 (defspecial *KEYWORDS* (make-hash-table))
 (sethash "CONTINUE" *KEYWORDS* :continue)
 (sethash "=" *KEYWORDS* :eq)
@@ -21,17 +19,31 @@
 (sethash "**" *KEYWORDS* :**)
 (sethash "#" *KEYWORDS* :hash)
 
+(defspecial *lookahead-buffer* nil)
+
+; public api
+
 (defun new-scanner (str) 
   (cons str 0))
 
 (defun next-token (scanner)
+  (if *lookahead-buffer*
+    (let ((val *lookahead-buffer*)) (setq *lookahead-buffer* nil) val)
+    (read-next-token scanner)))
+
+(defun lookahead (scanner)
+  (if *lookahead-buffer*
+    *lookahead-buffer*
+    (setq *lookahead-buffer* (next-token scanner))))
+
+; private api
+
+(defun read-next-token (scanner)
   (if (>= (next scanner) (length (input scanner)))
-    :eof
+    (cons :eof nil)
     (progn
        (unread-whitespace! scanner) 
        (read-token! scanner))))
-
-; private api
 
 (defun next+ (scanner i)
    (rplacd scanner (+ i (cdr scanner)))
@@ -52,16 +64,21 @@
    (car scanner))
 
 (defun whitespacep (c)
-  (or (eql c #\newline) (eql c #\tab) (eql c #\space)))
+  (or (eql c #\tab) (eql c #\space)))
 
 (defun make-token (str)
-  (or (fortran-keyword str) 
+  (or (fortran-eol str)
+      (fortran-keyword str) 
       (fortran-function-name str) 
       (fortran-fixnum str)
       (fortran-float str)
       (fortran-fixnum-variable str)
       (fortran-float-variable str)
       (error (concatenate "illegal token: " str))))
+
+(defun fortran-eol (str)
+  (when (equal str "\n")
+    (cons :eol NIL)))
 
 (defun fortran-keyword (str)
   (let ((k (gethash str *KEYWORDS*)))
@@ -98,11 +115,13 @@
     (next+ scanner l)
     (make-token token)))
 
+;TODO rewrite this ugly implementation
 (defun len-non-whitespace (scanner len)
-   (let ((c (next-char-n scanner len))) 
-      (if (or (not c) (whitespacep c))
-         len
-         (len-non-whitespace scanner (1+ len)))))
+   (let ((c (next-char-n scanner len)))
+      (if (eql c #\newline) (if (eql len 0) 1 len)
+        (if (or (not c) (whitespacep c))
+          len
+          (len-non-whitespace scanner (1+ len))))))
 
 (defun unread-whitespace! (scanner)
    (if (whitespacep (next-char scanner))
