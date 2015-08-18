@@ -18,11 +18,11 @@ TODO Funktionen, die in die StdLib von Acheron gehören und dort auch bald integ
 (defun str-first (str)
   (subseq str 0 1))
 
-(defun >= (a b) 
+(defun >= (a b)
   (or (> a b) (eql a b)))
 
 (defun concatenate (&rest strs)
-  (reduce #'__str-conc strs ""))
+  (reduce #'__str-conc (mapcar #'__str-coercion strs) ""))
 
 (defnative js-prop (obj prop) #{
    return obj[prop];
@@ -63,6 +63,9 @@ TODO Funktionen, die in die StdLib von Acheron gehören und dort auch bald integ
    return parseFloat(str);
 }#)
 
-(defun find (e l)
-  (when l 
-    (if (equal e (car l)) e (find e (cdr l)))))
+;
+; options: (:test #'test-fn) - defaults to #'equal
+(defun find (e l &rest options)
+  (let ((test-fn (if (equal (car options) :test) (cadr options) #'equal)))
+    (when l
+      (if (funcall test-fn (caar l) e) (car (cdar l)) (find e (cdr l) :test test-fn)))))

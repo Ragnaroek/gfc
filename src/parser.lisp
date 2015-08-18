@@ -10,13 +10,22 @@
 
 ; private api
 
+(defun case-lookahead-test-fn (a b)
+  (if (eq a T) T (equal a b)))
+
+(defmacro case-lookahead (&rest cases)
+  (let ((l (gensym)) (c (gensym)))
+     `(let ((,l (lookahead *scanner*)))
+        (let ((,c (find ,l ',cases :test 'case-lookahead-test-fn)))
+          (when ,c (funcall ,c))))))
+
 (defun match (token)
   (let ((next-token (next-token *scanner*)))
     (print-debug next-token)
     (print-debug token)
     (print-debug "----")
     (unless (eq (car next-token) token)
-      (error (concatenate "parser error, unexpected symbol"))))) ; TODO better error message
+      (error (concatenate "parser error, unexpected symbol: " (car next-token) " expected: " token)))))
 
 (defun parse-stmt-list ()
   (parse-stmt-line)
@@ -29,5 +38,11 @@
   (match :eol))
 
 (defun parse-statement ()
-  (match :fixnum) ; TODO real parse of statement!!
-  )
+  (case-lookahead
+     (:DO parse-do)
+     (T parse-formula)))
+
+(defun parse-formula ()
+  (match :fixnum)) ; only that atm
+
+(defun parse-do ())
